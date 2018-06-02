@@ -9,7 +9,7 @@ from migrate.versioning import api
 from config import SQLALCHEMY_DATABASE_URI
 from config import SQLALCHEMY_MIGRATE_REPO
 
-from app.models import Role, Setting, DomainTemplate
+from app.models import Role, Setting, DomainTemplate, User
 from app import db, script_manager
 
 
@@ -50,6 +50,12 @@ def create_db():
         print("ERROR: Couldn't connect to database server")
         exit(1)
     init_records()
+
+
+@script_manager.command
+def create_admin(username, plain_text_password):
+    admin = User(username=username, plain_text_password=plain_text_password, role_id=1)
+    print(admin.create_local_user())
 
 
 def connect_db(wait_time):
@@ -137,4 +143,7 @@ def commit_version_control(db_commit):
     elif db_commit is not None:
         api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, api.version(SQLALCHEMY_MIGRATE_REPO))
 
+
+if __name__ == "__main__":
+    script_manager.run()
 
