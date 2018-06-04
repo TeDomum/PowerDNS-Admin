@@ -36,11 +36,13 @@ PRETTY_IPV6_PTR = True
 # Update config using Docker options
 import json
 for name in globals().copy():
-    if name.startswith('PDNS_'):
+    env = "PDNS_{}".format(name)
+    if env in os.environ:
         try:
-            value = json.loads(os.environ.get(name))
+            value = json.loads(os.environ[env])
         except:
-            value = os.environ.get(name)
+            value = os.environ[env]
         finally:
-            globals()[name[5:]] = value
+            print("{} = {}".format(name, repr(value)))
+            globals()[name] = value
 
